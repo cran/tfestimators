@@ -53,5 +53,20 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 #    predict_keys = "logistic")
 
 ## ------------------------------------------------------------------------
-#  coefs <- coef(classifier)
+#  saved_model_dir <- model_dir(classifier)
+
+## ------------------------------------------------------------------------
+#  library(tfestimators)
+#  linear_feature_columns <- feature_columns(column_numeric("mpg"))
+#  dnn_feature_columns <- feature_columns(column_numeric("drat"))
+#  
+#  loaded_model <-
+#  	dnn_linear_combined_classifier(
+#  	  linear_feature_columns = linear_feature_columns,
+#  	  dnn_feature_columns = dnn_feature_columns,
+#  	  dnn_hidden_units = c(3, 3),
+#  	  dnn_optimizer = "Adagrad",
+#  	  model_dir = saved_model_dir
+#  	)
+#  loaded_model
 

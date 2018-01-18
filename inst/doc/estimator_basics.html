@@ -243,10 +243,29 @@ classifier &lt;-
   <span class="dt">input_fn =</span> input,
   <span class="dt">predict_keys =</span> <span class="st">&quot;logistic&quot;</span>)</code></pre></div>
 <p>You can find all the available keys by printing <code>prediction_keys()</code>. However, not all keys can be used by different types of estimators. For example, regressors cannot use <code>&quot;probabilities&quot;</code> as one of the keys since probability output only makes sense for classification models.</p>
-<p>There’s also a function called <code>coef()</code> that can be used extract the trained coefficients of a model.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">coefs &lt;-<span class="st"> </span><span class="kw">coef</span>(classifier)</code></pre></div>
+</div>
+<div id="model-persistence" class="section level2">
+<h2>Model Persistence</h2>
+<p>Models created via <code>tfestimators</code> are persisted on disk. To obtain the location of where the model artifacts are stored, we can call <code>model_dir()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">saved_model_dir &lt;-<span class="st"> </span><span class="kw">model_dir</span>(classifier)</code></pre></div>
+<p>And subsequently load the saved model (in a new session) by passing the directory to the <code>model_dir</code> argument of the model constructor and use it for prediction or continue training:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tfestimators)
+linear_feature_columns &lt;-<span class="st"> </span><span class="kw">feature_columns</span>(<span class="kw">column_numeric</span>(<span class="st">&quot;mpg&quot;</span>))
+dnn_feature_columns &lt;-<span class="st"> </span><span class="kw">feature_columns</span>(<span class="kw">column_numeric</span>(<span class="st">&quot;drat&quot;</span>))
+
+loaded_model &lt;-
+<span class="st">    </span><span class="kw">dnn_linear_combined_classifier</span>(
+      <span class="dt">linear_feature_columns =</span> linear_feature_columns,
+      <span class="dt">dnn_feature_columns =</span> dnn_feature_columns,
+      <span class="dt">dnn_hidden_units =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">3</span>),
+      <span class="dt">dnn_optimizer =</span> <span class="st">&quot;Adagrad&quot;</span>,
+      <span class="dt">model_dir =</span> saved_model_dir
+    )
+loaded_model</code></pre></div>
+</div>
+<div id="generic-methods" class="section level2">
+<h2>Generic methods</h2>
 <p>There are a number of estimator methods which can be used generically with any canned or custom estimator:</p>
-<p>To train and generate predictions with estimators you use the following set of generic functions:</p>
 <table style="width:100%;">
 <colgroup>
 <col width="38%"></col>
@@ -278,10 +297,6 @@ classifier &lt;-
 <tr class="odd">
 <td><code>export_savedmodel()</code></td>
 <td>Exports inference graph as a SavedModel into a given directory.</td>
-</tr>
-<tr class="even">
-<td><code>coef()</code></td>
-<td>Get the list coefficients or variables from this model’s checkpoint.</td>
 </tr>
 </tbody>
 </table>

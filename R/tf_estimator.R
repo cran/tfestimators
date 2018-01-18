@@ -275,8 +275,6 @@ evaluate.tf_estimator <- function(object,
 #'
 #' Save an estimator (alongside its weights) to the directory `export_dir_base`.
 #'
-#' TODO: we should document how a user can load a saved model here as well.
-#'
 #' @details
 #'
 #' This method builds a new graph by first calling the serving_input_receiver_fn
@@ -302,8 +300,8 @@ evaluate.tf_estimator <- function(object,
 #'
 #' @template roxlate-object-estimator
 #'
-#' @param export_dir_base A string containing a directory in which to create
-#'   timestamped subdirectories containing exported SavedModels.
+#' @param export_dir_base A string containing a directory in which to export the
+#'   SavedModel.
 #' @param serving_input_receiver_fn A function that takes no argument and
 #'   returns a `ServingInputReceiver`. Required for custom models.
 #' @param assets_extra A dict specifying how to populate the assets.extra
@@ -313,6 +311,8 @@ evaluate.tf_estimator <- function(object,
 #' @param checkpoint_path The checkpoint path to export. If `NULL` (the
 #'   default), the most recent checkpoint found within the model directory is
 #'   chosen.
+#' @param overwrite Should the \code{export_dir} directory be overwritten?
+#' @param versioned Should the model be exported under a versioned subdirectory?
 #' @param ... Optional arguments passed on to the estimator's
 #'   `export_savedmodel()` method.
 #'
@@ -329,44 +329,79 @@ export_savedmodel.tf_estimator <- function(object,
                                            assets_extra = NULL,
                                            as_text = FALSE,
                                            checkpoint_path = NULL,
+                                           overwrite = TRUE,
+                                           versioned = !overwrite,
                                            ...)
 {
+  if (!overwrite && !versioned && file.exists(export_dir_base))
+    stop("Path '", export_dir_base, "' already exists, use 'overwrite = TRUE' instead.")
+  
   if (is.null(serving_input_receiver_fn)) {
     if (is.tf_custom_estimator(object))
       stop("A 'tf_custom_estimator' requires a custom `serving_input_receiver_fn`.")
+    
     feature_columns_spec <- c(
       object$args$dnn_feature_columns,
       object$args$linear_feature_columns,
       object$args$feature_columns
       )
-    if (length(grep("regressor", class(object))) != 0) {
-      input_spec <- regressor_parse_example_spec(
-        feature_columns = feature_columns_spec,
-        weight_column = object$args$weight_column,
-        label_key = "label"
-      )
-    } else if (length(grep("classifier", class(object))) != 0) {
-      input_spec <- classifier_parse_example_spec(
-        feature_columns = feature_columns_spec,
-        weight_column = object$args$weight_column,
-        label_key = "label"
-      )
-    } else {
+    
+    if (length(grep("regressor", class(object))) == 0 &&
+        length(grep("classifier", class(object))) == 0) {
       stop("Currently only classifier and regressor are supported. Please specify a custom serving_input_receiver_fn. ")
     }
-    serving_input_receiver_fn <- tf$estimator$export$build_parsing_serving_input_receiver_fn(input_spec)
+    
+    if (tf_version() < '1.4') {
+      if (length(grep("regressor", class(object))) != 0) {
+        input_spec <- regressor_parse_example_spec(
+          feature_columns = feature_columns_spec,
+          weight_column = object$args$weight_column,
+          label_key = "label"
+        )
+      } else {
+        input_spec <- classifier_parse_example_spec(
+          feature_columns = feature_columns_spec,
+          weight_column = object$args$weight_column,
+          label_key = "label"
+        )
+      }
+      
+      serving_input_receiver_fn <- tf$estimator$export$build_parsing_serving_input_receiver_fn(input_spec)
+    } else {
+      features <- list()
+      for (feature in feature_columns_spec) {
+        # first dimension is variable since it's required by cloudml-like interfaces to push multiple instances
+        features[[feature$name]] <- tf$placeholder(shape = shape(NULL, feature$shape), dtype = feature$dtype)
+      }
+      
+      serving_input_receiver_fn <- tf$estimator$export$build_raw_serving_input_receiver_fn(features)
+    }
   }
   
-  status <- object$estimator$export_savedmodel(
-    export_dir_base = export_dir_base,
+  export_target <- if (versioned) export_dir_base else tempdir()
+  
+  export_result <- object$estimator$export_savedmodel(
+    export_dir_base = export_target,
     serving_input_receiver_fn = serving_input_receiver_fn,
     assets_extra = assets_extra,
     as_text = as_text,
     checkpoint_path = checkpoint_path,
     ...
   )
+  
+  if (!versioned) {
+    if (overwrite && file.exists(export_dir_base))
+      unlink(export_dir_base, recursive = TRUE)
+    
+    if (!file.exists(export_dir_base))
+      dir.create(export_dir_base, recursive = TRUE)
+    
+    file.copy(file.path(export_result, "."), export_dir_base, recursive = TRUE)
+    unlink(export_result, recursive = TRUE)
+    export_result <- export_dir_base
+  }
 
-  invisible(status)
+  invisible(export_result)
 }
 
 #' Get variable names and values associated with an estimator

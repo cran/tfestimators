@@ -1,7 +1,7 @@
 Package: tfestimators
 Type: Package
 Title: Interface to 'TensorFlow' Estimators
-Version: 1.4.2
+Version: 1.5
 Authors@R: c(
   person("JJ", "Allaire", role = c("aut", "cre"),
          email = "jj@rstudio.com"),
@@ -33,7 +33,7 @@ RoxygenNote: 6.0.1
 Suggests: ggplot2, modelr (>= 0.1.1), testthat, knitr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2017-12-20 11:43:28 UTC; jjallaire
+Packaged: 2018-01-18 18:22:31 UTC; jjallaire
 Author: JJ Allaire [aut, cre],
   Yuan Tang [aut],
   Kevin Ushey [aut],
@@ -43,4 +43,4 @@ Author: JJ Allaire [aut, cre],
   Google Inc. [cph]
 Maintainer: JJ Allaire <jj@rstudio.com>
 Repository: CRAN
-Date/Publication: 2017-12-20 13:19:50 UTC
+Date/Publication: 2018-01-18 19:12:33 UTC
