@@ -2,25 +2,24 @@
 % Please edit documentation in R/dnn_linear_combined_estimators.R
 \name{dnn_linear_combined_estimators}
 \alias{dnn_linear_combined_estimators}
-\alias{dnn_linear_combined_estimators}
 \alias{dnn_linear_combined_regressor}
-\alias{dnn_linear_combined_estimators}
 \alias{dnn_linear_combined_classifier}
 \title{Linear Combined Deep Neural Networks}
 \usage{
 dnn_linear_combined_regressor(model_dir = NULL,
   linear_feature_columns = NULL, linear_optimizer = "Ftrl",
   dnn_feature_columns = NULL, dnn_optimizer = "Adagrad",
-  dnn_hidden_units = NULL, dnn_activation_fn = "relu", dnn_dropout = NULL,
-  label_dimension = 1L, weight_column = NULL,
+  dnn_hidden_units = NULL, dnn_activation_fn = "relu",
+  dnn_dropout = NULL, label_dimension = 1L, weight_column = NULL,
   input_layer_partitioner = NULL, config = NULL)
 
 dnn_linear_combined_classifier(model_dir = NULL,
   linear_feature_columns = NULL, linear_optimizer = "Ftrl",
   dnn_feature_columns = NULL, dnn_optimizer = "Adagrad",
-  dnn_hidden_units = NULL, dnn_activation_fn = "relu", dnn_dropout = NULL,
-  n_classes = 2L, weight_column = NULL, label_vocabulary = NULL,
-  input_layer_partitioner = NULL, config = NULL)
+  dnn_hidden_units = NULL, dnn_activation_fn = "relu",
+  dnn_dropout = NULL, n_classes = 2L, weight_column = NULL,
+  label_vocabulary = NULL, input_layer_partitioner = NULL,
+  config = NULL)
 }
 \arguments{
 \item{model_dir}{Directory to save the model parameters, graph, and so on.
@@ -50,7 +49,7 @@ has 32 nodes.}
 actual activation function (e.g. \code{tf$nn$relu}), or the name of an
 activation function (e.g. \code{"relu"}). Defaults to the
 \code{"relu"} activation function. See
-\url{https://www.tensorflow.org/versions/r0.12/api_docs/python/nn/activation_functions_}
+\url{https://www.tensorflow.org/api_guides/python/nn#Activation_Functions}
 for documentation related to the set of activation functions available
 in TensorFlow.}
 
@@ -89,6 +88,8 @@ Also known as \code{wide-n-deep} estimators, these are estimators for
 TensorFlow Linear and DNN joined models for regression.
 }
 \seealso{
-Other canned estimators: \code{\link{dnn_estimators}},
+Other canned estimators: \code{\link{boosted_trees_estimators}},
+  \code{\link{dnn_estimators}},
   \code{\link{linear_estimators}}
 }
+\concept{canned estimators}

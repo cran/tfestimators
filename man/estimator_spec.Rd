@@ -4,8 +4,9 @@
 \alias{estimator_spec}
 \title{Define an Estimator Specification}
 \usage{
-estimator_spec(mode, predictions = NULL, loss = NULL, train_op = NULL,
-  eval_metric_ops = NULL, training_hooks = NULL, evaluation_hooks = NULL,
+estimator_spec(mode, predictions = NULL, loss = NULL,
+  train_op = NULL, eval_metric_ops = NULL, training_hooks = NULL,
+  evaluation_hooks = NULL, prediction_hooks = NULL,
   training_chief_hooks = NULL, ...)
 }
 \arguments{
@@ -31,6 +32,8 @@ trigger the update ops or requires any input fetching.}
 
 \item{evaluation_hooks}{(Available since TensorFlow v1.4) A list of session run hooks to run during evaluation.}
 
+\item{prediction_hooks}{(Available since TensorFlow v1.7) A list of session run hooks to run during prediciton.}
+
 \item{training_chief_hooks}{(Available since TensorFlow v1.4) A list of session run hooks to run on chief worker during training.}
 
 \item{...}{Other optional (named) arguments, to be passed to the \code{EstimatorSpec} constructor.}
@@ -46,3 +49,4 @@ Other custom estimator methods: \code{\link{estimator}},
   \code{\link{predict.tf_estimator}},
   \code{\link{train.tf_estimator}}
 }
+\concept{custom estimator methods}

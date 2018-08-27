@@ -36,19 +36,40 @@ if (have_tensorflow()) {
   mtcars_regression_specs <- function() {
     dnn_feature_columns <- feature_columns(column_numeric("drat"))
     linear_feature_columns <- feature_columns(column_numeric("drat"))
-    constructed_input_fn <- input_fn(mtcars, response = "mpg", features = c("drat", "cyl"), batch_size = 1L)
+    bucketized_columns <- feature_columns(
+      column_bucketized(column_numeric("drat"), 
+                        quantile(mtcars$drat, seq(0.2, 0.8, 0.2)))
+    )
+    constructed_input_fn <- input_fn(
+      mtcars, response = "mpg", features = c("drat", "cyl"), 
+      batch_size = 1L)
     list(dnn_feature_columns = dnn_feature_columns,
          linear_feature_columns = linear_feature_columns,
+         bucketized_columns = bucketized_columns,
          input_fn = constructed_input_fn)
   }
   
   mtcars_classification_specs <- function() {
     dnn_feature_columns <- feature_columns(column_numeric("drat"))
     linear_feature_columns <- feature_columns(column_numeric("drat"))
-    constructed_input_fn <- input_fn(mtcars, response = "vs", features = c("drat", "cyl"))
+    bucketized_columns <- feature_columns(
+      column_bucketized(column_numeric("drat"), 
+                        quantile(mtcars$drat, seq(0.2, 0.8, 0.2)))
+      )
+    constructed_input_fn <- input_fn(
+      purrr::map_at(mtcars, "vs", 
+                    purrr::partial(tensorflow::np_array, dtype = "float32")),
+      response = "vs", features = c("drat", "cyl")
+      )
+    constructed_input_fn_integer_response <- input_fn(
+      mtcars,
+      response = "vs", features = c("drat", "cyl")
+    )
     list(dnn_feature_columns = dnn_feature_columns,
          linear_feature_columns = linear_feature_columns,
-         input_fn = constructed_input_fn)
+         bucketized_columns = bucketized_columns,
+         input_fn = constructed_input_fn,
+         input_fn_integer_response = constructed_input_fn_integer_response)
   }
   
   iris_classification_specs <- function() {
@@ -84,8 +105,8 @@ if (have_tensorflow()) {
       tf$contrib$layers$fully_connected(3L, activation_fn = NULL) # Compute logits (1 per class) and compute loss.
     
     predictions <- list(
-      class = tf$argmax(logits, 1L),
-      prob = tf$nn$softmax(logits))
+      classes = tf$argmax(logits, 1L),
+      probabilities = tf$nn$softmax(logits))
     
     if (mode == mode_keys()$PREDICT) {
       return(estimator_spec(mode = mode, predictions = predictions, loss = NULL, train_op = NULL))
