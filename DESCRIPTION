@@ -1,7 +1,7 @@
 Package: tfestimators
 Type: Package
 Title: Interface to 'TensorFlow' Estimators
-Version: 1.9.0
+Version: 1.9.1
 Authors@R: c(
   person("JJ", "Allaire", role = c("aut"),
          email = "jj@rstudio.com"),
@@ -28,14 +28,14 @@ SystemRequirements: TensorFlow (https://www.tensorflow.org/)
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.1)
-Imports: magrittr, progress, reticulate (>= 1.10), rlang, tensorflow
-        (>= 1.9), tfruns (>= 1.1), tidyselect, utils, purrr, tibble,
-        tidyr
+Imports: forge, magrittr, progress, reticulate (>= 1.10), rlang (>=
+        0.3), tensorflow (>= 1.9), tfruns (>= 1.1), tidyselect, utils,
+        purrr, tibble, tidyr
 RoxygenNote: 6.1.0
 Suggests: ggplot2, modelr (>= 0.1.1), testthat, knitr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-08-27 20:35:48 UTC; kevinykuo
+Packaged: 2018-11-07 10:15:19 UTC; kevinykuo
 Author: JJ Allaire [aut],
   Yuan Tang [aut] (<https://orcid.org/0000-0001-5243-233X>),
   Kevin Ushey [aut],
@@ -45,4 +45,4 @@ Author: JJ Allaire [aut],
   Google Inc. [cph]
 Maintainer: Kevin Kuo <kevin.kuo@rstudio.com>
 Repository: CRAN
-Date/Publication: 2018-08-27 22:30:02 UTC
+Date/Publication: 2018-11-07 10:30:02 UTC

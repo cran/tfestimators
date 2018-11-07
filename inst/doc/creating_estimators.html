@@ -20,7 +20,7 @@
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -33,13 +33,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
   { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -339,7 +337,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="setup" class="section level1">
 <h1>Setup</h1>
 <p>This tutorial uses three data sets. <a href="http://download.tensorflow.org/data/abalone_train.csv"><code>abalone_train.csv</code></a> contains labeled training data comprising 3,320 examples. <a href="http://download.tensorflow.org/data/abalone_test.csv"><code>abalone_test.csv</code></a> contains labeled test data for 850 examples. <a href="http://download.tensorflow.org/data/abalone_predict.csv"><code>abalone_predict</code></a> contains 7 examples on which to make predictions.</p>
-<p>The following sections walk through writing the <code>Estimator</code> code step by step; the <a href="https://www.tensorflow.org/code/tensorflow/examples/tutorials/estimators/abalone.py">full, final code is available here</a>.</p>
+<p>The following sections walk through writing the <code>Estimator</code> code step by step; the <a href="https://github.com/tensorflow/tensorflow/blob/r1.3/tensorflow/examples/tutorials/estimators/abalone.py">full, final code is available here</a>.</p>
 </div>
 <div id="downloading-and-loading-abalone-csv-data" class="section level1">
 <h1>Downloading and Loading Abalone CSV Data</h1>

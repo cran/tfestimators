@@ -14,9 +14,7 @@ feature_columns <- function(..., names = NULL) {
   # scope names when they are provided
   if (!is.null(names))
     tidyselect::scoped_vars(object_names(names))
-  
-  # evaluate in an environment where 'tidyselect' is available
-  data <- tidyselect_data()
+
   selections <- lapply(quos(...), function(quo) {
     
     # if this is a two-sided formula, transform call from e.g.
@@ -34,13 +32,13 @@ feature_columns <- function(..., names = NULL) {
       lhs <- expr[[2]]; rhs <- expr[[3]]
       
       # inject lhs as first argument to rhs
-      injected <- as.call(c(lang_head(rhs), lhs, lang_tail(rhs)))
+      injected <- as.call(c(node_car(get_expr(rhs)), lhs, node_cdr(get_expr(rhs))))
       
       # update expression
       quo <- set_expr(quo, injected)
     }
     
-    rlang::eval_tidy(quo, data = data)
+    rlang::eval_tidy(quo)
   })
   
   # flatten our (potentially recursive) list
@@ -114,8 +112,8 @@ column_categorical_with_vocabulary_list <- function(...,
       key = column,
       vocabulary_list = vocabulary_list,
       dtype = dtype,
-      default_value = ensure_scalar_integer(default_value, allow.null = TRUE),
-      num_oov_buckets = ensure_scalar_integer(num_oov_buckets)
+      default_value = cast_nullable_scalar_integer(default_value),
+      num_oov_buckets = cast_scalar_integer(num_oov_buckets)
     )
   })
 }
@@ -170,8 +168,8 @@ column_categorical_with_vocabulary_file <- function(...,
       key = column,
       vocabulary_file = vocabulary_file,
       vocabulary_size = vocabulary_size,
-      num_oov_buckets = ensure_scalar_integer(num_oov_buckets),
-      default_value = ensure_scalar_integer(default_value, allow.null = TRUE),
+      num_oov_buckets = cast_scalar_integer(num_oov_buckets),
+      default_value = cast_nullable_scalar_integer(default_value),
       dtype = dtype
     )
   })
@@ -186,7 +184,7 @@ column_categorical_with_vocabulary_file <- function(...,
 #'
 #' Typically, this is used for contiguous ranges of integer indexes, but it
 #' doesn't have to be. This might be inefficient, however, if many of IDs are
-#' unused. Consider `categorical_column_with_hash_bucket` in that case.
+#' unused. Consider `column_categorical_with_hash_bucket()` in that case.
 #'
 #' For input dictionary `features`, `features$key` is either tensor or sparse 
 #' tensor object. If it's tensor object, missing values can be represented by `-1` for
@@ -215,8 +213,8 @@ column_categorical_with_identity <- function(...,
   create_columns(..., f = function(column) {
     feature_column_lib$categorical_column_with_identity(
       key = column,
-      num_buckets = ensure_scalar_integer(num_buckets),
-      default_value = ensure_scalar_integer(default_value, allow.null = TRUE)
+      num_buckets = cast_scalar_integer(num_buckets),
+      default_value = cast_nullable_scalar_integer(default_value)
     )
 
   })
@@ -224,11 +222,11 @@ column_categorical_with_identity <- function(...,
 
 #' Represents Multi-Hot Representation of Given Categorical Column
 #'
-#' Used to wrap any `categorical_column_*` (e.g., to feed to DNN). Use
-#' `embedding_column` if the inputs are sparse.
+#' Used to wrap any `column_categorical()*` (e.g., to feed to DNN). Use
+#' `column_embedding()` if the inputs are sparse.
 #'
 #' @param categorical_column A categorical column which is created by
-#'   the `categorical_column_with_*()` or `crossed_column()` functions.
+#'   the `column_categorical_with_*()` or `column_crossed()` functions.
 #'
 #' @return An indicator column.
 #'
@@ -268,7 +266,7 @@ column_categorical_with_hash_bucket <- function(...,
                                                 hash_bucket_size,
                                                 dtype = tf$string)
 {
-  hash_bucket_size <- ensure_scalar_integer(hash_bucket_size)
+  hash_bucket_size <- cast_scalar_integer(hash_bucket_size)
   if (hash_bucket_size <= 1) {
     stop("hash_bucket_size must be larger than 1")
   }
@@ -328,7 +326,7 @@ column_numeric <- function(...,
   create_columns(..., f = function(column) {
     feature_column_lib$numeric_column(
       key = column,
-      shape = ensure_scalar_integer(shape),
+      shape = cast_scalar_integer(shape),
       default_value = default_value,
       dtype = dtype,
       normalizer_fn = normalizer_fn
@@ -388,7 +386,7 @@ column_embedding <- function(categorical_column,
 {
   feature_column_lib$embedding_column(
     categorical_column = categorical_column,
-    dimension = ensure_scalar_integer(dimension),
+    dimension = cast_scalar_integer(dimension),
     combiner = combiner,
     initializer = initializer,
     ckpt_to_load_from = ckpt_to_load_from,
@@ -428,7 +426,7 @@ column_crossed <- function(keys,
                            hash_bucket_size,
                            hash_key = NULL)
 {
-  hash_bucket_size <- ensure_scalar_integer(hash_bucket_size)
+  hash_bucket_size <- cast_scalar_integer(hash_bucket_size)
   if (hash_bucket_size <= 1) {
     stop("hash_bucket_size must be larger than 1")
   }
