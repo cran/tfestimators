@@ -1,8 +1,8 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(eval = FALSE)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  set.seed(123)
 #  train_idx <- sample(nrow(iris), nrow(iris) * 2/3)
 #  
@@ -15,7 +15,7 @@ knitr::opts_chunk$set(eval = FALSE)
 #  write.csv(iris_validation, "iris_validation.csv", row.names = FALSE)
 #  write.csv(iris_sample, "iris_sample.csv", row.names = FALSE)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  library(tfestimators)
 #  response <- "Species"
 #  features <- setdiff(names(iris), response)
@@ -30,7 +30,7 @@ knitr::opts_chunk$set(eval = FALSE)
 #    label_vocabulary = c("setosa", "virginica", "versicolor")
 #  )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  iris_input_fn <- function(data) {
 #    input_fn(data, features = features, response = response)
 #  }
@@ -45,7 +45,7 @@ knitr::opts_chunk$set(eval = FALSE)
 #    dataset_batch(10) %>%
 #    dataset_repeat(1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #  history <- train(classifier, input_fn = iris_input_fn(iris_train))
 #  plot(history)
 #  predictions <- predict(classifier, input_fn = iris_input_fn(iris_validation))

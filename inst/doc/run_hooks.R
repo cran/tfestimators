@@ -1,7 +1,7 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  fcs <- feature_columns(column_numeric("drat"))
 #  input <- input_fn(mtcars, response = "mpg", features = c("drat", "cyl"), batch_size = 8L)
 #  lr <- linear_regressor(
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #      hook_progress_bar()
 #    ))
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  lr <- linear_regressor(feature_columns = fcs)
 #  training_history <- train(
 #    lr,
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #      hook_history_saver(every_n_step = 2)
 #    ))
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  mean_losses_history <<- NULL
 #  hook_history_saver_custom <- function(every_n_step) {
 #  
@@ -48,7 +48,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #      )
 #  }
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  lr <- linear_regressor(
 #    feature_columns = fcs
 #  ) %>% train(

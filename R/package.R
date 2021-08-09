@@ -12,7 +12,7 @@
 #' flexible architecture allows you to deploy computation to one or more CPUs or
 #' GPUs in a desktop, server, or mobile device with a single API.
 #' 
-#' The \href{https://www.tensorflow.org/api_docs/python/index.html}{TensorFlow 
+#' The \href{https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/all_symbols}{TensorFlow 
 #' API} is composed of a set of Python modules that enable constructing and 
 #' executing TensorFlow graphs. The tensorflow package provides access to the 
 #' complete TensorFlow API from within R.
@@ -53,10 +53,18 @@ np <- NULL
     }
   )
   
+ 
   # core modules
-  estimator_lib <<- import("tensorflow.python.estimator.estimator", delay_load = delay_load)
-  feature_column_lib <<- import("tensorflow.python.feature_column.feature_column", delay_load = delay_load)
-  canned_estimator_lib <<- import("tensorflow.python.estimator.canned", delay_load = delay_load)
+  if (package_version(Sys.getenv("TENSORFLOW_VERSION", "1.15")) <= "1.12") {
+    estimator_lib <<- import("tensorflow.python.estimator.estimator", delay_load = delay_load)
+    feature_column_lib <<- import("tensorflow.python.feature_column.feature_column", delay_load = delay_load)
+    canned_estimator_lib <<- import("tensorflow.python.estimator.canned", delay_load = delay_load)
+  } else {
+    estimator_lib <<- import("tensorflow_estimator.python.estimator.estimator", delay_load = delay_load)
+    feature_column_lib <<- import("tensorflow.python.feature_column.feature_column_v2", delay_load = delay_load)
+    canned_estimator_lib <<- import("tensorflow_estimator.python.estimator.canned", delay_load = delay_load)
+  }
+  
 
   # other modules
   np <<- import("numpy", convert = FALSE, delay_load = TRUE)
@@ -67,7 +75,7 @@ check_tensorflow_version <- function(displayed_warning) {
   required_least_ver <- "1.3"
   if (current_tf_ver < required_least_ver) {
     if (!displayed_warning) {
-      message("tfestimators requires TensorFlow version > ", required_least_ver, " ",
+      message("tfestimators requires TensorFlow version >= ", required_least_ver, " ",
               "(you are currently running version ", current_tf_ver, ").\n")
       displayed_warning <<- TRUE
     }
@@ -79,7 +87,8 @@ check_tensorflow_version <- function(displayed_warning) {
 }
 
 .onAttach <- function(libname, pkgname) {
-
+  msg <- "tfestimators is not recomended for new code. It is only compatible with Tensorflow version 1, and is not compatable with Tensorflow version 2."
+  packageStartupMessage(msg)
 }
 
 .onDetach <- function(libpath) {
